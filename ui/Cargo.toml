@@ -1,0 +1,25 @@
+[package]
+name = "weather-data-aggregator-ui"
+authors = ["Grzegorz Krason <grzegorz.krason@gmail.com>"]
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.98"
+chrono = "0.4.41"
+console_error_panic_hook = "0.1.7"
+gloo-net = "0.6.0"
+gloo-storage = "0.3.0"
+indexmap = { version = "2.9.0", features = ["serde"] }
+leptos = { version = "0.8.2", features = ["csr"] }
+leptos_meta = "0.8.2"
+leptos_router = "0.8.2"
+regex = "1.11.1"
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = { version = "1.0.140" }
+url = "2.5.4"
+web-sys = "0.3.77"
+
+[profile.release]
+lto = true
+opt-level = "z"

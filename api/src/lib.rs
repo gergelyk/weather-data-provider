@@ -1,0 +1,129 @@
+mod collectors;
+mod downloader;
+mod measurements;
+
+use crate::measurements::Measurements;
+use collectors::{AemetDownloader, MeteocatDownloader, MeteoclimaticDownloader};
+use downloader::Downloader;
+use futures::future::join_all;
+use measurements::get_units;
+use serde_json::json;
+use spin_sdk::http::{IntoResponse, Request, Response};
+use spin_sdk::http_component;
+use std::collections::HashMap;
+
+fn log_req_info(req: &Request) {
+    let client_addr: &str = req
+        .header("spin-client-addr")
+        .map(|v| v.as_str().unwrap_or("?!"))
+        .unwrap_or("?");
+
+    let full_url: &str = req
+        .header("spin-full-url")
+        .map(|v| v.as_str().unwrap_or("?!"))
+        .unwrap_or("?");
+
+    log::info!("{} {} {}", client_addr, req.method(), full_url);
+}
+
+fn plain_text_resp(status: u16, message: &str) -> Response {
+    Response::builder()
+        .status(status)
+        .header("content-type", "text/plain")
+        .body(message)
+        .build()
+}
+
+fn check_token(req: &Request) -> anyhow::Result<Option<Response>> {
+    let query_string = req.query();
+    let query_vector = querystring::querify(query_string);
+    let query: HashMap<_, _> = query_vector.into_iter().collect();
+
+    let expected_token = spin_sdk::variables::get("api_token")?;
+
+    if let Some(token) = query.get("token") {
+        if token != &expected_token {
+            log::error!("Invalid token: {}", token);
+            return Ok(Some(plain_text_resp(400, "Invalid token")));
+        }
+    } else {
+        log::error!("Missing token");
+        return Ok(Some(plain_text_resp(400, "Missing token")));
+    }
+
+    Ok(None)
+}
+
+async fn dispatch(url: &str) -> Measurements {
+    // scheme and domain are case insensitive
+    let url_lower = url.to_lowercase();
+
+    let aemet = AemetDownloader {};
+    let meteocat = MeteocatDownloader {};
+    let meteoclimatic = MeteoclimaticDownloader {};
+
+    if url_lower.starts_with(&aemet.base_url()) {
+        aemet.download(url).await
+    } else if url_lower.starts_with(&meteocat.base_url()) {
+        meteocat.download(url).await
+    } else if url_lower.starts_with(&meteoclimatic.base_url()) {
+        meteoclimatic.download(url).await
+    } else {
+        log::warn!("Unsupported station URL: {}", url);
+        Measurements::default()
+    }
+}
+
+async fn handle_post(req: &Request) -> anyhow::Result<Response> {
+    if let Some(resp) = check_token(req)? {
+        return Ok(resp);
+    };
+
+    let body_bytes = req.body();
+    let urls = match serde_json::from_slice::<Vec<String>>(body_bytes) {
+        Ok(v) => v,
+        Err(e) => {
+            log::error!("Invalid configuration data: {}", e);
+            return Ok(plain_text_resp(
+                400,
+                &format!("Invalid configuration data: {}", e),
+            ));
+        }
+    };
+
+    let futures = urls
+        .iter()
+        .map(|url| async move { dispatch(url.as_str()).await });
+
+    let measurements = join_all(futures).await;
+
+    let data = json!({
+        "measurements": measurements,
+        "units": get_units(),
+    });
+
+    Ok(Response::builder()
+        .status(200)
+        .header("content-type", "application/json")
+        .body(data.to_string())
+        .build())
+}
+
+#[http_component]
+async fn handle_weather_data_provider(req: Request) -> anyhow::Result<impl IntoResponse> {
+    simple_logger::init_with_level(log::Level::Info)?;
+    log_req_info(&req);
+
+    match req.method() {
+        spin_sdk::http::Method::Get => {
+            let app_name = env!("CARGO_PKG_NAME");
+            let app_version = env!("CARGO_PKG_VERSION");
+            Ok(plain_text_resp(
+                200,
+                &format!("Hello from {app_name} v{app_version}"),
+            ))
+        }
+        spin_sdk::http::Method::Post => handle_post(&req).await,
+        _ => Ok(plain_text_resp(405, "Method not allowed")),
+    }
+}

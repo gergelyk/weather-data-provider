@@ -1,0 +1,68 @@
+spin_manifest_version = 2
+
+[application]
+name = "weather-data-aggregator"
+version = "0.1.0"
+authors = ["Grzegorz Krason <grzegorz.krason@gmail.com>"]
+description = "Agregates current weather data from multiple sources."
+
+[variables]
+api_token = { required = true }
+
+
+[[trigger.http]]
+route = "/static/..."
+component = "weather-data-aggregator-static"
+
+[component.weather-data-aggregator-static]
+source = { url = "https://github.com/fermyon/spin-fileserver/releases/download/v0.3.0/spin_static_fs.wasm", digest = "sha256:ef88708817e107bf49985c7cefe4dd1f199bf26f6727819183d5c996baa3d148" }
+files = [{ source = "static", destination = "/" }]
+
+
+
+[[trigger.http]]
+route = "/api/v1/..."
+component = "weather-data-aggregator-api"
+
+[component.weather-data-aggregator-api]
+source = "api/target/wasm32-wasip1/release/weather_data_aggregator_api.wasm"
+allowed_outbound_hosts = ["https://www.aemet.es", "https://www.meteoclimatic.net", "https://www.meteo.cat"]
+
+[component.weather-data-aggregator-api.build]
+command = "cargo build --target wasm32-wasip1 --release"
+watch = ["src/**/*.rs", "Cargo.toml"]
+workdir = "api"
+
+[component.weather-data-aggregator-api.variables]
+api_token = "{{ api_token }}"
+
+
+
+[[trigger.http]]
+route = "/..."
+component = "weather-data-aggregator-ui"
+
+[component.weather-data-aggregator-ui]
+source = { url = "https://github.com/fermyon/spin-fileserver/releases/download/v0.3.0/spin_static_fs.wasm", digest = "sha256:ef88708817e107bf49985c7cefe4dd1f199bf26f6727819183d5c996baa3d148" }
+files = [{ source = "ui/dist", destination = "/" }]
+environment = { FALLBACK_PATH = "index.html" }
+
+[component.weather-data-aggregator-ui.build]
+command = "trunk build --release"
+watch = ["src/**/*.rs", "Cargo.toml"]
+workdir = "ui"
+
+
+
+[[trigger.http]]
+route = "/pbproxy/..."
+component = "weather-data-aggregator-pbproxy"
+
+[component.weather-data-aggregator-pbproxy]
+source = "pbproxy/target/wasm32-wasip1/release/weather_data_aggregator_pbproxy.wasm"
+allowed_outbound_hosts = ["https://lesma.eu"]
+
+[component.weather-data-aggregator-pbproxy.build]
+command = "cargo build --target wasm32-wasip1 --release"
+workdir = "pbproxy"
+watch = ["src/**/*.rs", "Cargo.toml"]
