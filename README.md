@@ -2,6 +2,8 @@
 
 Agregates data from meteo stations.
 
+Application is available at: https://weather.krason.dev/
+
 Supported providers:
 - https://www.aemet.es
 - https://www.meteo.cat
