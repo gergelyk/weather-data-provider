@@ -5,12 +5,14 @@ mod measurements;
 use crate::measurements::Measurements;
 use collectors::{AemetDownloader, MeteocatDownloader, MeteoclimaticDownloader};
 use downloader::Downloader;
-use futures::future::join_all;
+use futures::stream::{self, StreamExt};
 use measurements::get_units;
 use serde_json::json;
 use spin_sdk::http::{IntoResponse, Request, Response};
 use spin_sdk::http_component;
 use std::collections::HashMap;
+
+const MAX_CONCURRENT_DOWNLOADS: usize = 100;
 
 fn log_req_info(req: &Request) {
     let client_addr: &str = req
@@ -91,11 +93,11 @@ async fn handle_post(req: &Request) -> anyhow::Result<Response> {
         }
     };
 
-    let futures = urls
-        .iter()
-        .map(|url| async move { dispatch(url.as_str()).await });
-
-    let measurements = join_all(futures).await;
+    let measurements = stream::iter(urls)
+        .map(|url| async move { dispatch(url.as_str()).await })
+        .buffered(MAX_CONCURRENT_DOWNLOADS)
+        .collect::<Vec<_>>()
+        .await;
 
     let data = json!({
         "measurements": measurements,
