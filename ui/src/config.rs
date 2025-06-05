@@ -65,6 +65,7 @@ fn default_config() -> Config {
             {"label": "Belltall", "url": "https://www.meteoclimatic.net/perfil/ESCAT4300000043413A"},
             {"label": "Pineda Town", "url": "https://www.meteoclimatic.net/perfil/ESCAT0800000008397A"},
             {"label": "Ager Observatory", "url": "https://www.meteo.cat/observacions/xema/dades?codi=WQ"},
+            {"label": "Montserrat", "url": "https://www.meteo.cat/observacions/xema/dades?codi=WN"},
             {"label": "Manresa Town", "url": "https://www.aemet.es/en/eltiempo/observacion/ultimosdatos?k=cat&l=0149X"}
         ],
         "measurements": [
