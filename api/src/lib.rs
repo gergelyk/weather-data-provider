@@ -12,6 +12,9 @@ use spin_sdk::http::{IntoResponse, Request, Response};
 use spin_sdk::http_component;
 use std::collections::HashMap;
 
+const MAX_NUMBER_OF_MEASUREMENTS: usize = 50;
+
+// important only when smaller than MAX_NUMBER_OF_MEASUREMENTS
 const MAX_CONCURRENT_DOWNLOADS: usize = 100;
 
 fn log_req_info(req: &Request) {
@@ -92,6 +95,15 @@ async fn handle_post(req: &Request) -> anyhow::Result<Response> {
             ));
         }
     };
+
+    if urls.len() > MAX_NUMBER_OF_MEASUREMENTS {
+        log::error!(
+            "Too many measurements requested: {} (max: {})",
+            urls.len(),
+            MAX_NUMBER_OF_MEASUREMENTS
+        );
+        return Ok(plain_text_resp(400, "Too many measurements requested at once"));
+    }
 
     let measurements = stream::iter(urls)
         .map(|url| async move { dispatch(url.as_str()).await })
