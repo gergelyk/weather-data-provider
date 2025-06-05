@@ -8,6 +8,8 @@ description = "Agregates current weather data from multiple sources."
 
 [variables]
 api_token = { required = true }
+kv_explorer_user = { required = true }
+kv_explorer_password = { required = true }
 
 
 [[trigger.http]]
@@ -27,6 +29,7 @@ component = "weather-data-aggregator-api"
 [component.weather-data-aggregator-api]
 source = "api/target/wasm32-wasip1/release/weather_data_aggregator_api.wasm"
 allowed_outbound_hosts = ["https://www.aemet.es", "https://www.meteoclimatic.net", "https://www.meteo.cat"]
+key_value_stores = ["stats"]
 
 [component.weather-data-aggregator-api.build]
 command = "cargo build --target wasm32-wasip1 --release"
@@ -66,3 +69,17 @@ allowed_outbound_hosts = ["https://lesma.eu"]
 command = "cargo build --target wasm32-wasip1 --release"
 workdir = "pbproxy"
 watch = ["src/**/*.rs", "Cargo.toml"]
+
+
+
+[[trigger.http]]
+component = "kv-explorer"
+route = "/internal/kv-explorer/..."
+
+[component.kv-explorer]
+source = { url = "https://github.com/fermyon/spin-kv-explorer/releases/download/v0.10.0/spin-kv-explorer.wasm", digest = "sha256:65bc286f8315746d1beecd2430e178f539fa487ebf6520099daae09a35dbce1d" }
+allowed_outbound_hosts = ["redis://*:*", "mysql://*:*", "postgres://*:*"]
+key_value_stores = ["stats"]
+
+[component.kv-explorer.variables]
+kv_credentials = "{{ kv_explorer_user }}:{{ kv_explorer_password }}"

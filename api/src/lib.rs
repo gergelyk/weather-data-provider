@@ -9,7 +9,7 @@ use futures::stream::{self, StreamExt};
 use measurements::get_units;
 use serde_json::json;
 use spin_sdk::http::{IntoResponse, Request, Response};
-use spin_sdk::http_component;
+use spin_sdk::{http_component, key_value::Store};
 use std::collections::HashMap;
 
 const MAX_NUMBER_OF_MEASUREMENTS: usize = 50;
@@ -17,7 +17,7 @@ const MAX_NUMBER_OF_MEASUREMENTS: usize = 50;
 // important only when smaller than MAX_NUMBER_OF_MEASUREMENTS
 const MAX_CONCURRENT_DOWNLOADS: usize = 100;
 
-fn log_req_info(req: &Request) {
+fn log_req_info(req: &Request) -> anyhow::Result<()> {
     let client_addr: &str = req
         .header("spin-client-addr")
         .map(|v| v.as_str().unwrap_or("?!"))
@@ -28,7 +28,19 @@ fn log_req_info(req: &Request) {
         .map(|v| v.as_str().unwrap_or("?!"))
         .unwrap_or("?");
 
-    log::info!("{} {} {}", client_addr, req.method(), full_url);
+    let client_addr = client_addr.split(":").next().unwrap_or(client_addr);
+
+    let store = Store::open("stats")?;
+    let zero = "0".as_bytes();
+    let count_bytes = store.get(client_addr)?.unwrap_or(zero.to_vec());
+    let mut count = String::from_utf8_lossy(&count_bytes)
+        .parse::<u64>()
+        .unwrap_or(0);
+    count += 1;
+    store.set(client_addr, count.to_string().as_bytes())?;
+
+    log::info!("{}#{} {} {}", client_addr, count, req.method(), full_url);
+    Ok(())
 }
 
 fn plain_text_resp(status: u16, message: &str) -> Response {
@@ -126,7 +138,7 @@ async fn handle_post(req: &Request) -> anyhow::Result<Response> {
 #[http_component]
 async fn handle_weather_data_provider(req: Request) -> anyhow::Result<impl IntoResponse> {
     simple_logger::init_with_level(log::Level::Info)?;
-    log_req_info(&req);
+    log_req_info(&req)?;
 
     match req.method() {
         spin_sdk::http::Method::Get => {

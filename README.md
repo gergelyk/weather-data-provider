@@ -13,6 +13,8 @@ Supported providers:
 ## Development
 
 ```sh
+set-env SPIN_VARIABLE_KV_EXPLORER_USER demo
+set-env SPIN_VARIABLE_KV_EXPLORER_PASSWORD demo
 set-env SPIN_VARIABLE_API_TOKEN demo
 spin up --build
 curl -X POST -d @api/examples/mixed.json 'http://127.0.0.1:3000/api/v1?token=demo'
@@ -27,10 +29,12 @@ Notes:
 
 ```sh
 set-env SPIN_VARIABLE_API_TOKEN (tr -dc A-Za-z0-9 </dev/urandom | head -c 16)
-spin deploy --build --variable api_token=$E:SPIN_VARIABLE_API_TOKEN
+spin deploy --build ^
+--variable api_token=$E:SPIN_VARIABLE_API_TOKEN ^
+--variable kv_explorer_user=$E:SPIN_VARIABLE_KV_EXPLORER_USER ^
+--variable kv_explorer_password=$E:SPIN_VARIABLE_KV_EXPLORER_PASSWORD
 curl -X POST -d @api/examples/mixed.json 'https://weather.fermyon.app/api/v1?token='$E:SPIN_VARIABLE_API_TOKEN
 ```
 
 Notes:
 - Temporarily change name of the application in `spin.toml` if you would like to test before deploying to production.
-
