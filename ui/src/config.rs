@@ -69,6 +69,7 @@ fn default_config() -> Config {
             {"label": "Avià Pueblo", "url": "https://www.meteoclimatic.net/perfil/ESCAT0800000008610A"},
             {"label": "Rasos de Peguera", "url": "https://www.meteoclimatic.net/perfil/ESCAT0800000008618A"},
             {"label": "Ager Observatorio", "url": "https://www.meteo.cat/observacions/xema/dades?codi=WQ"},
+            {"label": "Ager Enlairament", "url": "https://www.weatherlink.com/embeddablePage/show/3c931c66b6604988ba922763daf39a52/wide"},
             {"label": "Vilanova de Meià", "url": "https://www.meteo.cat/observacions/xema/dades?codi=CQ"},
             {"label": "Organyà", "url": "https://www.weatherlink.com/embeddablePage/show/ba1da3b04c2d42f0963afb6cdc9fac77/wide"},
             {"label": "Belltall", "url": "https://www.meteoclimatic.net/perfil/ESCAT4300000043413A"},

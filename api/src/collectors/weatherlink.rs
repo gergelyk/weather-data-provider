@@ -53,7 +53,7 @@ impl Downloader for WeatherlinkDownloader {
         let body = String::from_utf8_lossy(response.body());
         let measurement_raw: MeasurementsRaw = serde_json::from_str(&body)?;
 
-        if measurement_raw.barometerUnits != "mb" {
+        if !["mb", "hPa"].contains(&measurement_raw.barometerUnits.as_str()) {
             anyhow::bail!("Unsupported barometer units: {}", measurement_raw.barometerUnits);
         }
         if measurement_raw.windUnits != "km/h" {
