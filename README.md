@@ -8,6 +8,7 @@ Supported providers:
 - https://www.aemet.es
 - https://www.meteo.cat
 - https://www.meteoclimatic.net
+- https://www.weatherlink.com
 
 
 ## Development
@@ -16,7 +17,7 @@ Supported providers:
 set-env SPIN_VARIABLE_KV_EXPLORER_USER demo
 set-env SPIN_VARIABLE_KV_EXPLORER_PASSWORD demo
 set-env SPIN_VARIABLE_API_TOKEN demo
-spin up --build
+spin up --build --runtime-config-file runtime_config.toml
 curl -X POST -d @api/examples/mixed.json 'http://127.0.0.1:3000/api/v1?token=demo'
 ```
 

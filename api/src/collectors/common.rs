@@ -17,3 +17,15 @@ pub trait Downloader {
         }
     }
 }
+
+pub fn wind_direction_name(degrees: f64) -> &'static str {
+    const DIRECTIONS: [&str; 16] = [
+        "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW",
+        "NW", "NNW",
+    ];
+    // Normalize degrees to [0, 360)
+    let deg = degrees.rem_euclid(360.0);
+    // Each sector is 22.5 degrees
+    let idx = ((deg + 11.25) / 22.5).floor() as usize % 16;
+    DIRECTIONS[idx]
+}

@@ -23,6 +23,9 @@ const CONFIG_ANNOTATIONS: &str = r#"
 #   https://www.meteo.cat/observacions/xema
 #   https://www.aemet.es/en/eltiempo/observacion/ultimosdatos
 #
+# Also links to www.weatherlink.com work, for instance:
+#   https://www.weatherlink.com/embeddablePage/show/ba1da3b04c2d42f0963afb6cdc9fac77/wide
+#
 # Keys of the measurements can be picked from the following list:
 #   location
 #   update_time_utc
@@ -58,15 +61,18 @@ pub struct Config {
 fn default_config() -> Config {
     let config = json!(
         {"stations": [
-            {"label": "Bellmunt Sanctuary", "url": "https://www.meteoclimatic.net/perfil/ESCAT0800000008572A"},
-            {"label": "Berga Sanctuary", "url": "https://www.meteo.cat/observacions/xema/dades?codi=WM"},
-            {"label": "Berga Town", "url": "https://www.meteoclimatic.net/perfil/ESCAT0800000008600A"},
-            {"label": "Avia Town", "url": "https://www.meteoclimatic.net/perfil/ESCAT0800000008610A"},
+            {"label": "Bellmunt Santuari", "url": "https://www.meteoclimatic.net/perfil/ESCAT0800000008572A"},
+            {"label": "Bellmunt Mirador", "url": "https://www.meteoclimatic.net/perfil/ESCAT0800000008572B"},
+            {"label": "Torelló Pueblo", "url": "https://www.meteoclimatic.net/perfil/ESCAT0800000008570A"},
+            {"label": "Berga Queralt", "url": "https://www.meteo.cat/observacions/xema/dades?codi=WM"},
+            {"label": "Berga Pueblo", "url": "https://www.meteoclimatic.net/perfil/ESCAT0800000008600A"},
+            {"label": "Avià Pueblo", "url": "https://www.meteoclimatic.net/perfil/ESCAT0800000008610A"},
+            {"label": "Rasos de Peguera", "url": "https://www.meteoclimatic.net/perfil/ESCAT0800000008618A"},
+            {"label": "Ager Observatorio", "url": "https://www.meteo.cat/observacions/xema/dades?codi=WQ"},
+            {"label": "Vilanova de Meià", "url": "https://www.meteo.cat/observacions/xema/dades?codi=CQ"},
+            {"label": "Organyà", "url": "https://www.weatherlink.com/embeddablePage/show/ba1da3b04c2d42f0963afb6cdc9fac77/wide"},
             {"label": "Belltall", "url": "https://www.meteoclimatic.net/perfil/ESCAT4300000043413A"},
-            {"label": "Pineda Town", "url": "https://www.meteoclimatic.net/perfil/ESCAT0800000008397A"},
-            {"label": "Ager Observatory", "url": "https://www.meteo.cat/observacions/xema/dades?codi=WQ"},
             {"label": "Montserrat", "url": "https://www.meteo.cat/observacions/xema/dades?codi=WN"},
-            {"label": "Manresa Town", "url": "https://www.aemet.es/en/eltiempo/observacion/ultimosdatos?k=cat&l=0149X"}
         ],
         "measurements": [
             {"label": "Location", "key": "location"},

@@ -1,4 +1,4 @@
-use crate::downloader::Downloader;
+use crate::collectors::Downloader;
 use crate::measurements::Measurements;
 use regex::Regex;
 use spin_sdk::http::{Method, Request, Response};

@@ -1,5 +1,6 @@
-use crate::downloader::Downloader;
+use crate::collectors::Downloader;
 use crate::measurements::Measurements;
+use crate::collectors::common::wind_direction_name;
 use anyhow::{anyhow, Context};
 use chrono::NaiveDateTime;
 use scraper::{Html, Selector};
@@ -8,18 +9,6 @@ use spin_sdk::http::{Method, Request, Response};
 pub const BASE_URL: &str = "https://www.meteo.cat/";
 
 pub struct MeteocatDownloader {}
-
-fn wind_direction_name(degrees: f64) -> &'static str {
-    const DIRECTIONS: [&str; 16] = [
-        "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW",
-        "NW", "NNW",
-    ];
-    // Normalize degrees to [0, 360)
-    let deg = degrees.rem_euclid(360.0);
-    // Each sector is 22.5 degrees
-    let idx = ((deg + 11.25) / 22.5).floor() as usize % 16;
-    DIRECTIONS[idx]
-}
 
 fn parse_selector(selector: &str) -> anyhow::Result<Selector> {
     Selector::parse(selector).map_err(|e| anyhow!(e.to_string()))

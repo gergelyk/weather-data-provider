@@ -1,0 +1,4 @@
+
+[key_value_store.stats]
+type = "spin" 
+path = ".spin/stats.db"

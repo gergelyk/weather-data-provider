@@ -1,4 +1,4 @@
-use crate::downloader::Downloader;
+use crate::collectors::Downloader;
 use crate::measurements::Measurements;
 use anyhow::{anyhow, Context};
 use chrono::NaiveDateTime;
