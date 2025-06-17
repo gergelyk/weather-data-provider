@@ -94,7 +94,8 @@ impl Downloader for AemetDownloader {
         let update_time_native = NaiveDateTime::parse_from_str(update_time_str, "%d/%m/%Y %H:%M")
             .context("Timestamp parsing failed")?;
 
-        // aeromet.es covers only Spain, so we always use Madrid timezone
+        // We always use Madrid timezone. This is fine for continental Spain,
+        // but will give incorrect results for Canary Islands.
         let update_time = Madrid
             .from_local_datetime(&update_time_native)
             .map(|dt| dt.naive_utc())

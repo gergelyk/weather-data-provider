@@ -28,7 +28,7 @@ component = "weather-data-aggregator-api"
 
 [component.weather-data-aggregator-api]
 source = "api/target/wasm32-wasip1/release/weather_data_aggregator_api.wasm"
-allowed_outbound_hosts = ["https://www.aemet.es", "https://www.meteoclimatic.net", "https://www.meteo.cat", "https://www.weatherlink.com"]
+allowed_outbound_hosts = ["https://www.aemet.es", "https://www.meteoclimatic.net", "https://www.meteo.cat", "https://www.weatherlink.com", "http://api.pioupiou.fr"]
 key_value_stores = ["stats"]
 
 [component.weather-data-aggregator-api.build]

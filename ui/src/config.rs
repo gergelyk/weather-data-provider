@@ -72,6 +72,7 @@ fn default_config() -> Config {
             {"label": "Ager Enlairament", "url": "https://www.weatherlink.com/embeddablePage/show/3c931c66b6604988ba922763daf39a52/wide"},
             {"label": "Vilanova de Meià", "url": "https://www.meteo.cat/observacions/xema/dades?codi=CQ"},
             {"label": "Organyà", "url": "https://www.weatherlink.com/embeddablePage/show/ba1da3b04c2d42f0963afb6cdc9fac77/wide"},
+            {"label": "Turó de Puigsagordi", "url": "https://www.openwindmap.org/windbird-1589"},
             {"label": "Belltall", "url": "https://www.meteoclimatic.net/perfil/ESCAT4300000043413A"},
             {"label": "Montserrat", "url": "https://www.meteo.cat/observacions/xema/dades?codi=WN"},
         ],

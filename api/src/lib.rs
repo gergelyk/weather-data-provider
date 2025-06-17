@@ -2,7 +2,7 @@ mod collectors;
 mod measurements;
 
 use crate::measurements::Measurements;
-use collectors::{Downloader, AemetDownloader, MeteocatDownloader, MeteoclimaticDownloader, WeatherlinkDownloader};
+use collectors::{Downloader, AemetDownloader, MeteocatDownloader, MeteoclimaticDownloader, WeatherlinkDownloader, OpenWindMapDownloader};
 use futures::stream::{self, StreamExt};
 use measurements::get_units;
 use serde_json::json;
@@ -77,6 +77,7 @@ async fn dispatch(url: &str) -> Measurements {
     let meteocat = MeteocatDownloader {};
     let meteoclimatic = MeteoclimaticDownloader {};
     let weatherlink = WeatherlinkDownloader {};
+    let openwindmap = OpenWindMapDownloader {};
 
     if url_lower.starts_with(&aemet.base_url()) {
         aemet.download(url).await
@@ -86,6 +87,8 @@ async fn dispatch(url: &str) -> Measurements {
         meteoclimatic.download(url).await
     } else if url_lower.starts_with(&weatherlink.base_url()) {
         weatherlink.download(url).await
+    } else if url_lower.starts_with(&openwindmap.base_url()) {
+        openwindmap.download(url).await
     } else {
         log::warn!("Unsupported station URL: {}", url);
         Measurements::default()
