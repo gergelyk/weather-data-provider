@@ -9,6 +9,7 @@ Supported providers:
 - https://www.meteo.cat
 - https://www.meteoclimatic.net
 - https://www.weatherlink.com
+- https://www.openwindmap.org
 
 
 ## Development

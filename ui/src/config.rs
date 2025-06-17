@@ -22,6 +22,7 @@ const CONFIG_ANNOTATIONS: &str = r#"
 #   https://www.meteoclimatic.net/mapinfo/ESCAT
 #   https://www.meteo.cat/observacions/xema
 #   https://www.aemet.es/en/eltiempo/observacion/ultimosdatos
+#   https://www.openwindmap.org
 #
 # Also links to www.weatherlink.com work, for instance:
 #   https://www.weatherlink.com/embeddablePage/show/ba1da3b04c2d42f0963afb6cdc9fac77/wide
